@@ -1105,6 +1105,15 @@ class SubtensorPowRegistration:
         if hotkey_bal >= min_balance:
             return
 
+        # Hotkey has some balance but below threshold — ask user
+        if hotkey_bal > 0:
+            answer = input(
+                f"Hotkey balance ({hotkey_bal:.4f} TAO) is below {min_balance} TAO. Transfer from coldkey? [y/N]: "
+            )
+            if answer.strip().lower() != "y":
+                print(f"Continuing with hotkey balance: {hotkey_bal:.4f} TAO")
+                return
+
         if coldkey_bal < min_balance + 0.01:
             raise ValueError(f"Coldkey balance too low ({coldkey_bal:.4f} TAO)")
 
