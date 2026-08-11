@@ -92,6 +92,7 @@ def cmd_register(args):
         netuid=args.netuid,
         wallet=wallet,
         use_cuda=args.cuda,
+        use_metal=getattr(args, "metal", False),
         dev_id=args.dev_id,
         tpb=args.tpb,
         num_processes=args.processes,
@@ -308,6 +309,9 @@ Examples:
     reg_parser.add_argument("--wallet", "-w", default="default", help="Wallet name (default: default)")
     reg_parser.add_argument("--hotkey", "-k", default="default", help="Hotkey name (default: default)")
     reg_parser.add_argument("--cuda", action="store_true", help="Use CUDA (GPU) for solving")
+    reg_parser.add_argument(
+        "--metal", action="store_true", help="Use Apple GPU (Metal) for solving — Apple Silicon Macs"
+    )
     reg_parser.add_argument("--dev-id", type=int, nargs="+", default=[0], help="CUDA device ID(s) (default: 0)")
     reg_parser.add_argument("--tpb", type=int, default=256, help="Threads per block for CUDA (default: 256)")
     reg_parser.add_argument("--processes", "-p", type=int, help="Number of CPU processes (default: all cores)")

@@ -1165,6 +1165,7 @@ class SubtensorPowRegistration:
         netuid: int,
         wallet,  # bittensor.Wallet
         use_cuda: bool = False,
+        use_metal: bool = False,  # Apple GPU (Metal) solver — see metal_solver.py
         dev_id: Union[int, List[int]] = 0,
         tpb: int = 256,
         num_processes: int = None,
@@ -1213,7 +1214,24 @@ class SubtensorPowRegistration:
                 round_num += 1
                 round_timeout = BLOCK_REFRESH_SECONDS
 
-                if use_cuda:
+                if use_metal:
+                    from .metal_solver import solve_pow_metal_round
+
+                    if round_num == 1:
+                        print("Solving with Metal (Apple GPU)...")
+                        self._metal_solver = None
+                    if getattr(self, "_metal_solver", None) is None:
+                        from .metal_solver import MetalSolver
+
+                        self._metal_solver = MetalSolver()
+                    solution = solve_pow_metal_round(
+                        block_and_hotkey_hash=block_and_hotkey_hash,
+                        difficulty=difficulty,
+                        block_number=block_number,
+                        timeout=round_timeout,
+                        solver=self._metal_solver,
+                    )
+                elif use_cuda:
                     dev_list = [dev_id] if isinstance(dev_id, int) else dev_id
                     if round_num == 1:
                         print(f"Solving with CUDA on device(s): {dev_list}, TPB: {tpb}")
